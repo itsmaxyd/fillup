@@ -1,0 +1,7 @@
+// Copy this file to api_config.dart and add your OpenAI API key
+
+class ApiConfig {
+  // Get your API key from: https://platform.openai.com/api-keys
+  static const String openAiApiKey = 'YOUR_OPENAI_API_KEY_HERE';
+}
+
