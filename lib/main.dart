@@ -35,7 +35,7 @@ class FillupApp extends StatelessWidget {
             seedColor: Colors.blue,
             brightness: Brightness.light,
           ),
-          cardTheme: CardTheme(
+          cardTheme: CardThemeData(
             elevation: 2,
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(12),
