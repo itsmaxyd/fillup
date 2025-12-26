@@ -7,7 +7,6 @@ A minimalistic and simple fuel tracking app for Android (expandable to iOS) that
 - 📊 **Track Fuel Expenses**: Monitor your fuel spending over time
 - ⛽ **Fuel Efficiency Tracking**: Calculate and track km/l efficiency
 - 🚗 **Multiple Vehicles**: Manage multiple vehicles with different fuel types
-- 📸 **Odometer Scanning**: Scan odometer readings using AI-powered OCR
 - 📈 **Visual Reports**: Beautiful charts showing expenses and efficiency trends
 - 💰 **Current Fuel Prices**: Auto-fetch current fuel prices by city
 - 💾 **Local Storage**: All data stored locally on your device
@@ -18,7 +17,6 @@ A minimalistic and simple fuel tracking app for Android (expandable to iOS) that
 - **Database**: SQLite (sqflite)
 - **State Management**: Provider
 - **Charts**: fl_chart
-- **OCR**: OpenAI GPT-4o-mini Vision API
 - **Web Scraping**: HTML parser for fuel prices
 
 ## Getting Started
@@ -43,14 +41,7 @@ cd fuelup
 flutter pub get
 ```
 
-3. **Configure OpenAI API Key** (Required for odometer scanning):
-   - Copy `lib/config/api_config.dart.example` to `lib/config/api_config.dart`
-   - Get your API key from [OpenAI Platform](https://platform.openai.com/api-keys)
-   - Replace `YOUR_OPENAI_API_KEY_HERE` with your actual API key
-   
-   Alternatively, you can directly edit `lib/services/encryption_service.dart` and replace the `_hardcodedApiKey` constant with your key.
-
-4. Run the app:
+3. Run the app:
 ```bash
 flutter run
 ```
@@ -65,7 +56,6 @@ flutter run
 
 ### Adding Fuel Entries
 - **Manual Entry**: Enter fuel amount in rupees or liters
-- **Scan Odometer**: Capture odometer image for AI-powered reading
 
 ### View Reports
 - Monthly expense charts
@@ -83,9 +73,7 @@ lib/
 │   └── fuel_price.dart
 ├── services/
 │   ├── database_service.dart
-│   ├── api_service.dart
-│   ├── fuel_price_service.dart
-│   └── encryption_service.dart
+│   └── fuel_price_service.dart
 ├── providers/
 │   ├── vehicle_provider.dart
 │   └── fuel_entry_provider.dart
@@ -93,13 +81,10 @@ lib/
 │   ├── setup_screen.dart
 │   ├── home_screen.dart
 │   ├── manual_entry_screen.dart
-│   ├── scan_odometer_screen.dart
 │   ├── reports_screen.dart
 │   └── settings_screen.dart
-└── widgets/
-    ├── vehicle_card.dart
-    ├── fuel_entry_card.dart
-    └── chart_widgets.dart
+└── utils/
+    └── security_utils.dart
 ```
 
 ## Contributing
@@ -113,4 +98,3 @@ This project is licensed under the MIT License.
 ## Author
 
 [itsmaxyd](https://github.com/itsmaxyd)
-

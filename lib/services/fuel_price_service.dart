@@ -2,6 +2,7 @@ import 'package:html/parser.dart' as html_parser;
 import 'package:http/http.dart' as http;
 import '../models/fuel_price.dart';
 import 'database_service.dart';
+import '../utils/security_utils.dart';
 
 class FuelPriceService {
   static final FuelPriceService instance = FuelPriceService._init();
@@ -17,6 +18,15 @@ class FuelPriceService {
   // Fetch current fuel price from mypetrolprice.com
   Future<FuelPrice?> fetchFuelPrice(String city, String fuelType) async {
     try {
+      // Validate inputs to prevent injection attacks
+      if (!SecurityUtils.isValidCityName(city)) {
+        throw Exception('Invalid city name');
+      }
+      
+      if (!SecurityUtils.isValidFuelType(fuelType)) {
+        throw Exception('Invalid fuel type');
+      }
+
       // Check if we have a recent cached price (less than 24 hours old)
       final cachedPrice = await _db.getFuelPrice(city, fuelType);
       if (cachedPrice != null && !cachedPrice.isStale()) {
@@ -29,7 +39,7 @@ class FuelPriceService {
           ? 'https://www.mypetrolprice.com/petrol-price-in-india.aspx'
           : 'https://www.mypetrolprice.com/diesel-price-in-india.aspx';
 
-      final response = await http.get(Uri.parse(url));
+      final response = await http.get(Uri.parse(url)).timeout(const Duration(seconds: 30));
 
       if (response.statusCode != 200) {
         throw Exception('Failed to fetch fuel prices: ${response.statusCode}');
@@ -44,7 +54,7 @@ class FuelPriceService {
       
       // Try to find the city and extract price
       final cityPattern = RegExp(
-        '$normalizedCity[^₹]*₹\\s*([\\d.]+)',
+        '${RegExp.escape(normalizedCity)}[^₹]*₹\\s*([\\d.]+)',
         caseSensitive: false,
       );
       
@@ -168,4 +178,3 @@ class FuelPriceService {
     return ['Petrol', 'Diesel', 'CNG'];
   }
 }
-

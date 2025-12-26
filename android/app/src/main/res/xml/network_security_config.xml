@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<network-security-config>
+    <!-- Set application-wide security config -->
+    <domain-config cleartextTrafficPermitted="false">
+        <!-- Force HTTPS for all domains -->
+        <domain includeSubdomains="true">mypetrolprice.com</domain>
+        <domain includeSubdomains="true">*.mypetrolprice.com</domain>
+        
+        <!-- Trust preloaded system certificates -->
+        <trust-anchors>
+            <certificates src="system" />
+        </trust-anchors>
+    </domain-config>
+    
+    <!-- Debug configuration for development -->
+    <debug-overrides>
+        <!-- Allow cleartext traffic only in debug builds -->
+        <trust-anchors>
+            <certificates src="system" />
+            <certificates src="user" />
+        </trust-anchors>
+    </debug-overrides>
+</network-security-config>

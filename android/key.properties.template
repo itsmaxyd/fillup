@@ -1,0 +1,15 @@
+# Signing Configuration for Fillup App
+# IMPORTANT: This file should NOT be committed to version control!
+# Create your own keystore and fill in the values below.
+
+# Path to your keystore file (relative to android directory or absolute path)
+storeFile=path/to/your/keystore.jks
+
+# Keystore password
+storePassword=your_keystore_password
+
+# Key alias name
+keyAlias=fillup_key
+
+# Key password
+keyPassword=your_key_password

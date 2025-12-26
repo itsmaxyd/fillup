@@ -3,15 +3,11 @@ import 'package:provider/provider.dart';
 import 'providers/vehicle_provider.dart';
 import 'providers/fuel_entry_provider.dart';
 import 'services/database_service.dart';
-import 'services/encryption_service.dart';
 import 'screens/setup_screen.dart';
 import 'screens/home_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  
-  // Initialize encryption service and API key
-  await EncryptionService.instance.initializeApiKey();
   
   runApp(const FillupApp());
 }
@@ -158,4 +154,3 @@ class _SplashScreenState extends State<SplashScreen> {
     );
   }
 }
-

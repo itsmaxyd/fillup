@@ -5,7 +5,6 @@ import '../providers/vehicle_provider.dart';
 import '../providers/fuel_entry_provider.dart';
 import '../models/fuel_entry.dart';
 import 'manual_entry_screen.dart';
-import 'scan_odometer_screen.dart';
 import 'reports_screen.dart';
 import 'settings_screen.dart';
 
@@ -52,19 +51,6 @@ class _HomeScreenState extends State<HomeScreen> {
                   context,
                   MaterialPageRoute(
                     builder: (_) => const ManualEntryScreen(),
-                  ),
-                );
-              },
-            ),
-            ListTile(
-              leading: const Icon(Icons.camera_alt),
-              title: const Text('Scan Odometer'),
-              onTap: () {
-                Navigator.pop(context);
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (_) => const ScanOdometerScreen(),
                   ),
                 );
               },
@@ -331,7 +317,7 @@ class _HomeTab extends StatelessWidget {
                             final previousEntry = index < entries.length - 1
                                 ? entries[index + 1]
                                 : null;
-                            
+                             
                             return _FuelEntryCard(
                               entry: entry,
                               previousEntry: previousEntry,
@@ -518,4 +504,3 @@ class _FuelEntryCard extends StatelessWidget {
     );
   }
 }
-

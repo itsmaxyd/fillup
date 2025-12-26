@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import '../models/vehicle.dart';
 import '../providers/vehicle_provider.dart';
 import '../services/fuel_price_service.dart';
+import '../utils/security_utils.dart';
 import 'home_screen.dart';
 
 class SetupScreen extends StatefulWidget {
@@ -38,8 +39,11 @@ class _SetupScreenState extends State<SetupScreen> {
     try {
       final vehicleProvider = context.read<VehicleProvider>();
       
+      // Sanitize inputs
+      final sanitizedName = SecurityUtils.sanitizeInput(_nameController.text.trim());
+      
       final vehicle = Vehicle(
-        name: _nameController.text.trim(),
+        name: sanitizedName,
         fuelType: _selectedFuelType!,
         city: _selectedCity!,
         initialMileage: double.parse(_mileageController.text),
@@ -59,7 +63,7 @@ class _SetupScreenState extends State<SetupScreen> {
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error: $e')),
+          SnackBar(content: Text('Error: ${e.toString().replaceAll(RegExp(r'[^\w\s-]'), '')}')),
         );
       }
     } finally {
@@ -128,6 +132,9 @@ class _SetupScreenState extends State<SetupScreen> {
                   validator: (value) {
                     if (value == null || value.trim().isEmpty) {
                       return 'Please enter a vehicle name';
+                    }
+                    if (!SecurityUtils.isValidVehicleName(value)) {
+                      return 'Please enter a valid vehicle name (letters, numbers, and basic punctuation only)';
                     }
                     return null;
                   },
@@ -205,9 +212,8 @@ class _SetupScreenState extends State<SetupScreen> {
                     if (value == null || value.trim().isEmpty) {
                       return 'Please enter current odometer reading';
                     }
-                    final mileage = double.tryParse(value);
-                    if (mileage == null || mileage < 0) {
-                      return 'Please enter a valid number';
+                    if (!SecurityUtils.isValidNumericInput(value, max: 500000)) {
+                      return 'Please enter a valid number (max 500,000 km)';
                     }
                     return null;
                   },
@@ -243,4 +249,3 @@ class _SetupScreenState extends State<SetupScreen> {
     );
   }
 }
-
