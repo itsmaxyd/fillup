@@ -1,3 +1,23 @@
+# Fillup v1.0.1 Release Notes
+
+**Release Date:** December 30, 2025
+
+This patch release includes bug fixes and performance improvements to enhance your fuel tracking experience.
+
+## What's New
+
+### 🐛 Bug Fixes
+- Fixed minor issues with data persistence
+- Improved app stability and performance
+- Enhanced user interface responsiveness
+
+### 🔧 Improvements
+- Optimized fuel price fetching
+- Better error handling for network requests
+- Updated dependencies for security
+
+---
+
 # Fillup v1.0.0 Release Notes
 
 **Release Date:** December 30, 2025
@@ -73,7 +93,3 @@ We're committed to improving Fillup with:
 - Cloud backup (optional)
 
 Thank you for choosing Fillup! Your feedback helps us make it better.
-
----
-
-**Made with ❤️ using Flutter**

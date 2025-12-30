@@ -86,14 +86,14 @@ Download FillUp today and take control of your fuel spending!
 - **Target Age Group**: 13+ (due to vehicle/fuel tracking nature)
 
 ## Release Notes
-*(For initial release)*
-FillUp v1.0.0 - Your fuel tracking companion is here!
+*(For v1.0.1 release)*
+FillUp v1.0.1 - Bug fixes and improvements!
 
-- Track fuel expenses and efficiency
-- Support for multiple vehicles
-- Beautiful reports and charts
-- Local data storage for privacy
-- Current fuel price information
+- Fixed data persistence issues
+- Improved app stability
+- Enhanced performance
+- Better fuel price fetching
+- Updated for security
 
 ## Keywords for ASO (App Store Optimization)
 fuel tracker, fuel efficiency, vehicle mileage, fuel expenses, fuel log, car fuel, fuel consumption, fuel calculator, mileage tracker, fuel cost, vehicle tracker, fuel management, fuel diary, fuel app, car maintenance
