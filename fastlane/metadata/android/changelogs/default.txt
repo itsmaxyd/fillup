@@ -1,7 +1,0 @@
-FillUp v1.0.1 - Bug fixes and improvements!
-
-- Fixed data persistence issues
-- Improved app stability
-- Enhanced performance
-- Better fuel price fetching
-- Updated for security

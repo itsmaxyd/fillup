@@ -1,0 +1,55 @@
+Categories:
+  - Finance
+
+License: GPL-3.0-or-later
+
+AuthorName: Max Demon
+AuthorEmail: maxdemon@outlook.com
+
+WebSite: https://itsmaxyd.github.io/fuelup/
+SourceCode: https://github.com/itsmaxyd/fuelup
+IssueTracker: https://github.com/itsmaxyd/fuelup/issues
+Donate: https://buymeacoffee.com/maxdemon
+
+Name: FillUp
+Summary: Fuel expense and mileage tracking app
+Description: |
+  FillUp is a simple, privacy-respecting fuel expense tracking application.
+  It helps users record fuel purchases, track mileage, and analyze fuel costs
+  over time without ads, tracking, or proprietary dependencies.
+
+AutoUpdateMode: Version
+UpdateCheckMode: Tags
+UpdateCheckData: pubspec.yaml|version:\s(.+)\+(\d+)|.|version:\s(.+)\+
+
+CurrentVersion: 1.0.0
+CurrentVersionCode: 11
+
+RepoType: git
+Repo: https://github.com/itsmaxyd/fuelup
+
+Builds:
+  - versionName: 1.0.0
+    versionCode: 11
+    commit: v1.0.0
+
+    subdir: .
+    sudo:
+      - apt-get update
+      - apt-get install -y curl unzip xz-utils git openjdk-17-jdk
+
+    output: build/app/outputs/flutter-apk/app-release.apk
+
+    build:
+      - export JAVA_HOME=/usr/lib/jvm/java-17-openjdk-amd64
+      - curl -fsSL https://storage.googleapis.com/flutter_infra_release/releases/stable/linux/flutter_linux_3.19.6-stable.tar.xz | tar xJ
+      - export PATH="$PWD/flutter/bin:$PATH"
+      - flutter config --no-analytics
+      - flutter pub get
+      - flutter build apk --release
+
+    ndk: r26b
+
+    gradle:
+      - yes
+
