@@ -24,22 +24,22 @@ dependencies:
   html: ^0.15.4
   
   # Charts
-  fl_chart: ^0.65.0
+  fl_chart: ^1.1.1
   
   # UI Components
   cupertino_icons: ^1.0.6
-  intl: ^0.18.1
+  intl: ^0.20.2
   
   # File Export
   path_provider: ^2.1.1
   csv: ^6.0.0
-  share_plus: ^7.2.1
+  share_plus: ^12.0.1
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
-  flutter_lints: ^3.0.1
-  flutter_launcher_icons: ^0.13.1
+  flutter_lints: ^6.0.0
+  flutter_launcher_icons: ^0.14.4
 
 flutter:
   uses-material-design: true
