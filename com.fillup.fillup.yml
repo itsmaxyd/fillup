@@ -35,9 +35,25 @@ Builds:
     build:
       - flutter build apk --release --no-tree-shake-icons
     output: build/app/outputs/flutter-apk/app-release.apk
+  - versionName: 1.0.5
+    versionCode: 6
+    commit: v1.0.5
+    submodules: true
+    sudo:
+      - apt-get update
+      - apt-get install -y unzip xz-utils git openjdk-17-jdk libglu1-mesa
+    prebuild:
+      - export FLUTTER_HOME=$PWD/flutter
+      - export PATH="$FLUTTER_HOME/bin:$PATH"
+      - flutter config --no-analytics
+      - flutter doctor
+      - flutter pub get
+    build:
+      - flutter build apk --release --no-tree-shake-icons
+    output: build/app/outputs/flutter-apk/app-release.apk
 
 AutoUpdateMode: Version
 UpdateCheckMode: Tags
 UpdateCheckData: pubspec.yaml|version:\s.+\+(\d+)|.|version:\s(.+)\+
-CurrentVersion: 1.0.4
-CurrentVersionCode: 5
+CurrentVersion: 1.0.5
+CurrentVersionCode: 6
