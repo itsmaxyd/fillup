@@ -47,7 +47,7 @@ A simple and intuitive fuel tracking app designed to help you monitor your fuel 
 
 1. **Clone the repository**
    ```bash
-   git clone https://github.com/yourusername/fillup.git
+   git clone https://github.com/itsmaxyd/fuelup.git
    cd fillup
    ```
 

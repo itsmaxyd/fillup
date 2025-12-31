@@ -80,7 +80,7 @@ For detailed installation instructions, see the [README.md](README.md) file.
 
 ## Support
 
-- **GitHub Repository:** [https://github.com/yourusername/fillup](https://github.com/yourusername/fillup)
+- **GitHub Repository:** [https://github.com/itsmaxyd/fuelup](https://github.com/itsmaxyd/fuelup)
 - **Issues:** Report bugs or request features via GitHub Issues
 - **Documentation:** Check the README for usage guides
 
