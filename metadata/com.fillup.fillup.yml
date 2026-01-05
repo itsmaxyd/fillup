@@ -1,32 +1,42 @@
+Categories:
+  - Money
+License: GPL-3.0-or-later
+AuthorName: Max Demon
+AuthorEmail: maxdemon@outlook.com
+WebSite: https://itsmaxyd.github.io/fillup/
+SourceCode: https://github.com/itsmaxyd/fillup
+IssueTracker: https://github.com/itsmaxyd/fillup/issues
+Donate: https://buymeacoffee.com/maxdemon
+
+AutoName: FillUp
+Summary: Fuel expense and mileage tracking app
+Description:  A fuel tracking app for monitoring fuel spends and efficiency
+
+RepoType: git
+Repo: https://github.com/itsmaxyd/fillup.git
+
 Builds:
-  - versionName: '1.0.8'
-    versionCode: 9
-    commit: v1.0.8
+  - versionName: 1.0.9
+    versionCode: 10
+    commit: v1.0.9
     output: build/app/outputs/flutter-apk/app-release.apk
     srclibs:
       - flutter@3.35.0
-
-    # ADD THIS: Install Java 17 explicitly
-    sudo:
-      - apt-get update || apt-get update
-      - apt-get install -y openjdk-17-jdk-headless
-
     prebuild:
-      # ADD THIS: Remove hardcoded local java path to prevent build failure
-      - sed -i '/org.gradle.java.home/d' android/gradle.properties
-
-      # ADD THIS: Set the correct Java Home for the build server
-      - export JAVA_HOME=/usr/lib/jvm/java-17-openjdk-amd64
-
-      # Existing steps
+      - sed -i -e '/java.home/d' android/gradle.properties
       - export PUB_CACHE=$(pwd)/.pub-cache
       - export PATH="$$flutter$$/bin:$PATH"
       - flutter config --no-analytics
       - flutter pub get
-
     scandelete:
       - .pub-cache
     build:
       - export PUB_CACHE=$(pwd)/.pub-cache
       - export PATH="$$flutter$$/bin:$PATH"
-      - flutter build apk --release --split-per-abi --target-platform="android-arm64"
+      - flutter build apk --release --target-platform="android-arm64"
+
+AutoUpdateMode: Version
+UpdateCheckMode: Tags
+UpdateCheckData: pubspec.yaml|version:\s.+\+(\d+)|.|version:\s(.+)\+
+CurrentVersion: 1.0.9
+CurrentVersionCode: 10
