@@ -22,6 +22,8 @@
 -dontwarn com.google.android.play.core.tasks.**
 -dontwarn io.flutter.embedding.engine.deferredcomponents.**
 
+-dontwarn io.flutter.embedding.android.FlutterPlayStoreSplitApplication
+
 # ---------------------------------------------------------
 # Optimization & Cleanup
 # ---------------------------------------------------------
