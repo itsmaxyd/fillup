@@ -113,7 +113,18 @@ configurations.all {
     exclude group: "com.google.android.play", module: "core-common"
 }
 
-// Copy APK to root build directory for Flutter to find
+// Copy APK to root build directory for Flutter to findsubprojects {
+    afterEvaluate { project ->
+        if (project.hasProperty("android")) {
+            project.android {
+                compileOptions {
+                    sourceCompatibility JavaVersion.VERSION_17
+                    targetCompatibility JavaVersion.VERSION_17
+                }
+            }
+        }
+    }
+
 afterEvaluate {
     tasks.register('copyApkToBuildDir') {
         dependsOn 'assembleRelease'
@@ -136,4 +147,21 @@ afterEvaluate {
     tasks.named('assembleRelease').configure {
         finalizedBy 'copyApkToBuildDir'
     }
+}
+
+subprojects {
+    afterEvaluate { project ->
+        if (project.hasProperty("android")) {
+            project.android {
+                compileOptions {
+                    sourceCompatibility JavaVersion.VERSION_17
+                    targetCompatibility JavaVersion.VERSION_17
+                }
+            }
+        }
+    }
+}
+
+kotlin {
+    jvmToolchain(17)
 }
