@@ -1,53 +1,37 @@
-# ProGuard rules for Fillup App
-
-# Keep Flutter classes
+# ---------------------------------------------------------
+# Flutter & Plugins
+# ---------------------------------------------------------
+# Keep Flutter engine and plugins
 -keep class io.flutter.** { *; }
--keep class io.flutter.plugins.** { *; }
+-keep class com.fillup.fillup.** { *; } 
 
-# Keep provider
--keep class provider.** { *; }
-
-# Keep sqflite
--keep class sqflite.** { *; }
--keep class com.** { *; }
-
-# Keep fl_chart
--keep class fl.chart.** { *; }
-
-# Keep http
--keep class http.** { *; }
+# ---------------------------------------------------------
+# Third Party Libraries (Only keep what is broken)
+# ---------------------------------------------------------
+# Fix for some Http client libraries
 -dontwarn org.conscrypt.**
 -dontwarn org.bouncycastle.**
 -dontwarn org.openjsse.**
 
-# Keep model classes
--keep class com.fillup.fillup.** { *; }
--keep class lib.models.** { *; }
--keep class lib.providers.** { *; }
--keep class lib.services.** { *; }
--keep class lib.utils.** { *; }
--keep class lib.screens.** { *; }
+# ---------------------------------------------------------
+# F-Droid / Google Play Core Fix (CRITICAL FOR YOUR BUILD)
+# ---------------------------------------------------------
+# Ignore missing Play Core classes since we stripped them for F-Droid
+-dontwarn com.google.android.play.core.splitcompat.**
+-dontwarn com.google.android.play.core.splitinstall.**
+-dontwarn com.google.android.play.core.tasks.**
+-dontwarn io.flutter.embedding.engine.deferredcomponents.**
 
-# Keep enum classes
--keepclassmembers enum * {
-    public static **[] values();
-    public static ** valueOf(java.lang.String);
-}
-
-# Preserve annotations
+# ---------------------------------------------------------
+# Optimization & Cleanup
+# ---------------------------------------------------------
+# Preserve annotations and line numbers for crash reports
 -keepattributes *Annotation*
-
-# Preserve line number tables
 -keepattributes SourceFile,LineNumberTable
 
-# Remove logging in release
+# Remove Android logging in release builds
 -assumenosideeffects class android.util.Log {
     public static *** d(...);
     public static *** v(...);
     public static *** i(...);
 }
-
-# Keep Flutter embedding intact
--keep class io.flutter.embedding.** { *; }
-
-#removed google core dependencies
