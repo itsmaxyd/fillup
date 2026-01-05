@@ -1,64 +1,32 @@
-Categories:
-  - Money
-
-License: GPL-3.0-or-later
-
-WebSite: https://itsmaxyd.github.io/fillup/
-SourceCode: https://github.com/itsmaxyd/fillup
-IssueTracker: https://github.com/itsmaxyd/fillup/issues
-Donate: https://buymeacoffee.com/maxdemon
-
-AutoName: FillUp
-Summary: Fuel expense and mileage tracking app
-Description: A fuel tracking app for monitoring fuel spends and efficiency
-
-AuthorName: Max Demon
-AuthorEmail: maxdemon@outlook.com
-
-RepoType: git
-Repo: https://github.com/itsmaxyd/fillup
-
-AutoUpdateMode: Version
-UpdateCheckMode: Tags
-UpdateCheckData: pubspec.yaml|version:\s.+\+(\d+)|.|version:\s(.+)\+
-
-CurrentVersion: 1.0.7
-CurrentVersionCode: 8
-
 Builds:
-  - versionName: 1.0.6
-    versionCode: 7
-    commit: v1.0.6
+  - versionName: '1.0.8'
+    versionCode: 9
+    commit: v1.0.8
     output: build/app/outputs/flutter-apk/app-release.apk
     srclibs:
       - flutter@3.35.0
-    prebuild:
-      - export PUB_CACHE=$(pwd)/.pub-cache
-      - $$flutter$$/bin/flutter config --no-analytics
-      - $$flutter$$/bin/flutter pub get
-    scandelete:
-      - .pub-cache/
 
+    # ADD THIS: Install Java 17 explicitly
+    sudo:
+      - apt-get update || apt-get update
+      - apt-get install -y openjdk-17-jdk-headless
+
+    prebuild:
+      # ADD THIS: Remove hardcoded local java path to prevent build failure
+      - sed -i '/org.gradle.java.home/d' android/gradle.properties
+
+      # ADD THIS: Set the correct Java Home for the build server
+      - export JAVA_HOME=/usr/lib/jvm/java-17-openjdk-amd64
+
+      # Existing steps
+      - export PUB_CACHE=$(pwd)/.pub-cache
+      - export PATH="$$flutter$$/bin:$PATH"
+      - flutter config --no-analytics
+      - flutter pub get
+
+    scandelete:
+      - .pub-cache
     build:
       - export PUB_CACHE=$(pwd)/.pub-cache
-      - $$flutter$$/bin/flutter build apk --release
-
-  - versionName: 1.0.7
-    versionCode: 8
-    commit: v1.0.7
-    output: build/app/outputs/flutter-apk/app-release.apk
-    srclibs:
-      - flutter@3.35.0
-    prebuild:
-      - export PUB_CACHE=$(pwd)/.pub-cache
-      - $$flutter$$/bin/flutter config --no-analytics
-      - $$flutter$$/bin/flutter pub get
-    scandelete:
-      - .pub-cache/
-      - .flutter*/
-      - .dart_tool/
-      - android/.gradle
-
-    build:
-      - export PUB_CACHE=$(pwd)/.pub-cache
-      - $$flutter$$/bin/flutter build apk --release
+      - export PATH="$$flutter$$/bin:$PATH"
+      - flutter build apk --release --split-per-abi --target-platform="android-arm64"
