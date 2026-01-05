@@ -47,11 +47,7 @@
     public static *** i(...);
 }
 
-# Flutter: Ignore Play Core (deferred components not used)
--dontwarn com.google.android.play.core.**
--dontwarn com.google.android.play.core.splitcompat.**
--dontwarn com.google.android.play.core.splitinstall.**
--dontwarn com.google.android.play.core.tasks.**
-
 # Keep Flutter embedding intact
 -keep class io.flutter.embedding.** { *; }
+
+#removed google core dependencies
