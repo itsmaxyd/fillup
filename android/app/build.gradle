@@ -19,7 +19,7 @@ if (flutterVersionCode == null) {
 
 def flutterVersionName = localProperties.getProperty('flutter.versionName')
 if (flutterVersionName == null) {
-    flutterVersionName = '1.0'
+    flutterVersionName = '1.0.9'
 }
 
 // Signing configuration for release builds
@@ -164,4 +164,11 @@ subprojects {
 
 kotlin {
     jvmToolchain(17)
+}
+
+configurations.all {
+    exclude group: 'com.google.android.play', module: 'core'
+    exclude group: 'com.google.android.play', module: 'feature-delivery'
+    exclude group: 'com.google.android.play', module: 'review'
+    exclude group: 'com.google.android.play', module: 'app-update'
 }
