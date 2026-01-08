@@ -13,7 +13,9 @@ extra
 # F-Droid metadata (keep this file tracked)
 # com.fillup.fillup.yml
 !metadata/
-
+.cursor/
+.kilocode/
+.vscode/
 # IntelliJ related
 *.iml
 *.ipr
