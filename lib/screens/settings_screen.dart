@@ -6,6 +6,7 @@ import 'package:csv/csv.dart';
 import 'dart:io';
 import '../providers/vehicle_provider.dart';
 import '../providers/fuel_entry_provider.dart';
+import '../providers/theme_provider.dart';
 import '../models/vehicle.dart';
 import '../services/fuel_price_service.dart';
 import 'setup_screen.dart';
@@ -228,6 +229,38 @@ class SettingsScreen extends StatelessWidget {
         builder: (context, vehicleProvider, _) {
           return ListView(
             children: [
+              // Appearance Section
+              const Padding(
+                padding: EdgeInsets.all(16),
+                child: Text(
+                  'Appearance',
+                  style: TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ),
+
+              Consumer<ThemeProvider>(
+                builder: (context, themeProvider, _) {
+                  return ListTile(
+                    leading: Icon(
+                      themeProvider.themeMode == ThemeMode.dark
+                          ? Icons.dark_mode
+                          : Icons.light_mode,
+                    ),
+                    title: const Text('Dark Mode'),
+                    subtitle: const Text('Toggle dark/light theme'),
+                    trailing: Switch(
+                      value: themeProvider.themeMode == ThemeMode.dark,
+                      onChanged: themeProvider.toggleTheme,
+                    ),
+                  );
+                },
+              ),
+
+              const Divider(),
+
               // Vehicles Section
               const Padding(
                 padding: EdgeInsets.all(16),
@@ -347,7 +380,7 @@ class SettingsScreen extends StatelessWidget {
               const ListTile(
                 leading: Icon(Icons.info_outline),
                 title: Text('Version'),
-                subtitle: Text('1.0.0'),
+                subtitle: Text('1.1.0'),
               ),
 
               const ListTile(

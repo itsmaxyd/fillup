@@ -84,13 +84,20 @@ Fillup is built with Flutter and follows clean architecture principles:
 - **Networking**: HTTP client for fuel price fetching
 - **Charts**: FL Chart for beautiful data visualization
 
+---
+# Features Roadmap
 
-
-
-
+- Dark Mode
+- fastag recharge calculation
+- geo location tagging
+- service history, accident repair
+- insurance remainder
+- car accessories purchase/affiliate
+- connected account sync/backup
+- Car EMI Tracking
 
 ---
 
-**Made with ❤️ using Flutter**
+**Made by Mayank Sahu (Max Demon)**
 
 [![Buy Me a Coffee](https://img.shields.io/badge/Buy%20Me%20a%20Coffee-FFDD00?style=for-the-badge&logo=buy-me-a-coffee&logoColor=black)](https://buymeacoffee.com/maxdemon)

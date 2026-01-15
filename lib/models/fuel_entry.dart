@@ -6,6 +6,9 @@ class FuelEntry {
   final double? fuelLiters;
   final double? fuelRupees;
   final double? pricePerLiter;
+  final String? odometerImagePath;
+  final bool isFullTank;
+  final String? notes;
   final DateTime createdAt;
 
   FuelEntry({
@@ -16,6 +19,9 @@ class FuelEntry {
     this.fuelLiters,
     this.fuelRupees,
     this.pricePerLiter,
+    this.odometerImagePath,
+    this.isFullTank = true,
+    this.notes,
     DateTime? createdAt,
   }) : createdAt = createdAt ?? DateTime.now();
 
@@ -66,6 +72,9 @@ class FuelEntry {
       'fuel_liters': fuelLiters,
       'fuel_rupees': fuelRupees,
       'price_per_liter': pricePerLiter,
+      'odometer_image_path': odometerImagePath,
+      'is_full_tank': isFullTank ? 1 : 0,
+      'notes': notes,
       'created_at': createdAt.toIso8601String(),
     };
   }
@@ -85,6 +94,9 @@ class FuelEntry {
       pricePerLiter: map['price_per_liter'] != null 
           ? (map['price_per_liter'] as num).toDouble() 
           : null,
+      odometerImagePath: map['odometer_image_path'] as String?,
+      isFullTank: (map['is_full_tank'] as int?) == 1,
+      notes: map['notes'] as String?,
       createdAt: DateTime.parse(map['created_at'] as String),
     );
   }
@@ -97,6 +109,9 @@ class FuelEntry {
     double? fuelLiters,
     double? fuelRupees,
     double? pricePerLiter,
+    String? odometerImagePath,
+    bool? isFullTank,
+    String? notes,
     DateTime? createdAt,
   }) {
     return FuelEntry(
@@ -107,8 +122,10 @@ class FuelEntry {
       fuelLiters: fuelLiters ?? this.fuelLiters,
       fuelRupees: fuelRupees ?? this.fuelRupees,
       pricePerLiter: pricePerLiter ?? this.pricePerLiter,
+      odometerImagePath: odometerImagePath ?? this.odometerImagePath,
+      isFullTank: isFullTank ?? this.isFullTank,
+      notes: notes ?? this.notes,
       createdAt: createdAt ?? this.createdAt,
     );
   }
 }
-

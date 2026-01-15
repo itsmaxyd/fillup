@@ -14,9 +14,9 @@ RepoType: git
 Repo: https://github.com/itsmaxyd/fillup.git
 
 Builds:
-  - versionName: 1.0.12
-    versionCode: 13
-    commit: v1.0.12
+  - versionName: 1.1.0
+    versionCode: 14
+    commit: v1.1.0
     output: build/app/outputs/flutter-apk/app-release.apk
     srclibs:
       - flutter@3.35.0
@@ -29,7 +29,7 @@ Builds:
     scandelete:
       - .pub-cache
     build:
-      - version=3.35.0
+      - version=$(grep -A 5 environment pubspec.yaml | grep flutter | sed "s/[^0-9.]//g")
       - git -C $$flutter$$ checkout $version
       - export PUB_CACHE=$(pwd)/.pub-cache
       - export PATH="$$flutter$$/bin:$PATH"
@@ -38,5 +38,5 @@ Builds:
 AutoUpdateMode: Version
 UpdateCheckMode: Tags
 UpdateCheckData: pubspec.yaml|version:\s.+\+(\d+)|.|version:\s(.+)\+
-CurrentVersion: 1.0.12
-CurrentVersionCode: 13
+CurrentVersion: 1.1.0
+CurrentVersionCode: 14

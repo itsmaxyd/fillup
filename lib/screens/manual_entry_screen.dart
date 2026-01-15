@@ -1,6 +1,9 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:intl/intl.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:google_mlkit_text_recognition/google_mlkit_text_recognition.dart';
 import '../providers/vehicle_provider.dart';
 import '../providers/fuel_entry_provider.dart';
 import '../services/fuel_price_service.dart';
@@ -18,12 +21,15 @@ class _ManualEntryScreenState extends State<ManualEntryScreen> {
   final _odometerController = TextEditingController();
   final _rupeesController = TextEditingController();
   final _litersController = TextEditingController();
+  final _notesController = TextEditingController();
   
   DateTime _selectedDate = DateTime.now();
   double? _currentFuelPrice;
   String _inputMode = 'rupees';
   bool _isLoading = false;
   bool _isRefreshing = false;
+  bool _isFullTank = true;
+  String? _odometerImagePath;
 
   // Validation errors
   String? _odometerError;
@@ -51,6 +57,7 @@ class _ManualEntryScreenState extends State<ManualEntryScreen> {
     _odometerController.dispose();
     _rupeesController.dispose();
     _litersController.dispose();
+    _notesController.dispose();
     super.dispose();
   }
 
@@ -110,6 +117,48 @@ class _ManualEntryScreenState extends State<ManualEntryScreen> {
       }
       if (liters != null && _inputMode == 'liters') {
         _rupeesController.text = '';
+      }
+    }
+  }
+
+  Future<void> _pickAndProcessOdometerImage() async {
+    final picker = ImagePicker();
+    final XFile? image = await picker.pickImage(source: ImageSource.camera);
+
+    if (image != null) {
+      setState(() {
+        _isLoading = true;
+        _odometerImagePath = image.path;
+      });
+
+      try {
+        final textRecognizer = TextRecognizer();
+        final inputImage = InputImage.fromFilePath(image.path);
+        final RecognizedText recognizedText = await textRecognizer.processImage(inputImage);
+        
+        RegExp regExp = RegExp(r'\d+'); 
+        Iterable<Match> matches = regExp.allMatches(recognizedText.text);
+        
+        if (matches.isNotEmpty) {
+          String detectedValue = matches.map((m) => m.group(0)!).reduce((a, b) => a.length >= b.length ? a : b);
+          _odometerController.text = detectedValue;
+          _onOdometerChanged();
+        } else {
+          if (mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(content: Text('Could not detect numbers in photo. Please enter manually.')),
+            );
+          }
+        }
+        textRecognizer.close();
+      } catch (e) {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('Error processing image: $e')),
+          );
+        }
+      } finally {
+        if (mounted) setState(() => _isLoading = false);
       }
     }
   }
@@ -263,6 +312,9 @@ class _ManualEntryScreenState extends State<ManualEntryScreen> {
         fuelLiters: liters,
         fuelRupees: rupees,
         pricePerLiter: _currentFuelPrice,
+        odometerImagePath: _odometerImagePath,
+        isFullTank: _isFullTank,
+        notes: _notesController.text.isEmpty ? null : _notesController.text,
       );
 
       final result = await entryProvider.addEntry(entry);
@@ -271,6 +323,7 @@ class _ManualEntryScreenState extends State<ManualEntryScreen> {
         _odometerController.clear();
         _rupeesController.clear();
         _litersController.clear();
+        _notesController.clear();
         _selectedDate = DateTime.now();
         
         Navigator.pop(context);
@@ -318,7 +371,6 @@ class _ManualEntryScreenState extends State<ManualEntryScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              // Vehicle Info Card
               if (selectedVehicle != null)
                 Card(
                   color: theme.primaryColor.withOpacity(0.08),
@@ -344,7 +396,7 @@ class _ManualEntryScreenState extends State<ManualEntryScreen> {
                 )
               else
                 Card(
-                  color: Colors.orange.withValues(alpha: 0.1),
+                  color: Colors.orange.withOpacity(0.1),
                   child: Padding(
                     padding: const EdgeInsets.all(16),
                     child: Row(
@@ -360,7 +412,6 @@ class _ManualEntryScreenState extends State<ManualEntryScreen> {
 
               const SizedBox(height: 16),
 
-              // Date Selection
               InkWell(
                 onTap: _selectDate,
                 child: InputDecorator(
@@ -382,28 +433,71 @@ class _ManualEntryScreenState extends State<ManualEntryScreen> {
 
               const SizedBox(height: 16),
 
-              // Odometer Reading
-              TextFormField(
-                controller: _odometerController,
-                decoration: InputDecoration(
-                  labelText: 'Odometer Reading',
-                  hintText: 'e.g., 12345',
-                  prefixIcon: const Icon(Icons.speed),
-                  border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
-                  errorText: _odometerError,
-                  errorMaxLines: 2,
-                  filled: _odometerError != null,
-                  fillColor: _odometerError != null ? Colors.red.withOpacity(0.05) : null,
-                ),
-                keyboardType: const TextInputType.numberWithOptions(decimal: true),
-                textInputAction: TextInputAction.next,
-                autovalidateMode: AutovalidateMode.onUserInteraction,
-                validator: _validateOdometer,
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    children: [
+                      Expanded(
+                        child: TextFormField(
+                          controller: _odometerController,
+                          decoration: InputDecoration(
+                            labelText: 'Odometer Reading',
+                            hintText: 'e.g., 12345',
+                            prefixIcon: const Icon(Icons.speed),
+                            border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
+                            errorText: _odometerError,
+                            errorMaxLines: 2,
+                            filled: _odometerError != null,
+                            fillColor: _odometerError != null ? Colors.red.withOpacity(0.05) : null,
+                          ),
+                          keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                          textInputAction: TextInputAction.next,
+                          autovalidateMode: AutovalidateMode.onUserInteraction,
+                          validator: _validateOdometer,
+                        ),
+                      ),
+                      const SizedBox(width: 8),
+                      IconButton(
+                        onPressed: _pickAndProcessOdometerImage,
+                        icon: const Icon(Icons.camera_alt),
+                        tooltip: 'Scan Odometer',
+                        style: IconButton.styleFrom(
+                          backgroundColor: theme.colorScheme.secondaryContainer,
+                          foregroundColor: theme.colorScheme.onSecondaryContainer,
+                        ),
+                      ),
+                    ],
+                  ),
+                  if (_odometerImagePath != null)
+                    Padding(
+                      padding: const EdgeInsets.only(top: 8.0),
+                      child: Row(
+                        children: [
+                          ClipRRect(
+                            borderRadius: BorderRadius.circular(4),
+                            child: Image.file(
+                              File(_odometerImagePath!),
+                              width: 60,
+                              height: 60,
+                              fit: BoxFit.cover,
+                            ),
+                          ),
+                          const SizedBox(width: 8),
+                          const Text('Odometer photo attached', style: TextStyle(fontSize: 12, color: Colors.green)),
+                          const Spacer(),
+                          IconButton(
+                            onPressed: () => setState(() => _odometerImagePath = null),
+                            icon: const Icon(Icons.close, size: 16),
+                          ),
+                        ],
+                      ),
+                    ),
+                ],
               ),
 
               const SizedBox(height: 16),
 
-              // Current Fuel Price Card
               if (_currentFuelPrice != null)
                 Card(
                   color: theme.primaryColor.withOpacity(0.08),
@@ -431,7 +525,7 @@ class _ManualEntryScreenState extends State<ManualEntryScreen> {
                 )
               else
                 Card(
-                  color: Colors.grey.withValues(alpha: 0.1),
+                  color: Colors.grey.withOpacity(0.1),
                   child: Padding(
                     padding: const EdgeInsets.all(12),
                     child: Row(
@@ -447,7 +541,6 @@ class _ManualEntryScreenState extends State<ManualEntryScreen> {
 
               const SizedBox(height: 16),
 
-              // Input Mode Toggle
               Container(
                 decoration: BoxDecoration(border: Border.all(color: Colors.grey[300]!), borderRadius: BorderRadius.circular(8)),
                 child: SegmentedButton<String>(
@@ -468,7 +561,6 @@ class _ManualEntryScreenState extends State<ManualEntryScreen> {
 
               const SizedBox(height: 16),
 
-              // Fuel Input
               if (_inputMode == 'rupees')
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -486,7 +578,7 @@ class _ManualEntryScreenState extends State<ManualEntryScreen> {
                         fillColor: _rupeesError != null ? Colors.red.withOpacity(0.05) : null,
                       ),
                       keyboardType: const TextInputType.numberWithOptions(decimal: true),
-                      textInputAction: TextInputAction.done,
+                      textInputAction: TextInputAction.next,
                       onChanged: _onRupeesChanged,
                       autovalidateMode: AutovalidateMode.onUserInteraction,
                       validator: _validateRupeesField,
@@ -522,7 +614,7 @@ class _ManualEntryScreenState extends State<ManualEntryScreen> {
                         fillColor: _litersError != null ? Colors.red.withOpacity(0.05) : null,
                       ),
                       keyboardType: const TextInputType.numberWithOptions(decimal: true),
-                      textInputAction: TextInputAction.done,
+                      textInputAction: TextInputAction.next,
                       onChanged: _onLitersChanged,
                       autovalidateMode: AutovalidateMode.onUserInteraction,
                       validator: _validateLitersField,
@@ -542,9 +634,32 @@ class _ManualEntryScreenState extends State<ManualEntryScreen> {
                   ],
                 ),
 
+              const SizedBox(height: 16),
+
+              SwitchListTile(
+                title: const Text('Full Tank?'),
+                subtitle: const Text('Recommended for accurate efficiency'),
+                value: _isFullTank,
+                onChanged: (bool value) => setState(() => _isFullTank = value),
+                secondary: const Icon(Icons.local_gas_station),
+                contentPadding: EdgeInsets.zero,
+              ),
+
+              const SizedBox(height: 16),
+
+              TextFormField(
+                controller: _notesController,
+                decoration: InputDecoration(
+                  labelText: 'Notes',
+                  hintText: 'e.g., Petrol pump name, or any issues',
+                  prefixIcon: const Icon(Icons.note),
+                  border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
+                ),
+                maxLines: 2,
+              ),
+
               const SizedBox(height: 24),
 
-              // Summary Card
               if (rupees != null || liters != null)
                 Card(
                   elevation: 2,
@@ -577,7 +692,6 @@ class _ManualEntryScreenState extends State<ManualEntryScreen> {
 
               const SizedBox(height: 24),
 
-              // Submit Button
               ElevatedButton(
                 onPressed: _isLoading ? null : _submitEntry,
                 style: ElevatedButton.styleFrom(
@@ -592,7 +706,7 @@ class _ManualEntryScreenState extends State<ManualEntryScreen> {
 
               const SizedBox(height: 16),
               Text(
-                'Tip: Enter either amount or quantity. The other will be calculated automatically.',
+                'Tip: Use the camera icon to quickly capture your odometer reading.',
                 textAlign: TextAlign.center,
                 style: theme.textTheme.bodySmall?.copyWith(color: Colors.grey[600]),
               ),

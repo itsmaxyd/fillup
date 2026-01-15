@@ -466,7 +466,7 @@ class _FuelEntryCard extends StatelessWidget {
 
     return Card(
       margin: const EdgeInsets.only(bottom: 8),
-      child: ListTile(
+      child: ExpansionTile(
         leading: CircleAvatar(
           child: Text(
             dateFormat.format(entry.date).split(' ')[0],
@@ -480,6 +480,14 @@ class _FuelEntryCard extends StatelessWidget {
               '• ${entry.getFuelLiters()?.toStringAsFixed(2) ?? 'N/A'} L',
               style: const TextStyle(fontSize: 14),
             ),
+            const Spacer(),
+            if (entry.odometerImagePath != null)
+              const Icon(Icons.image, size: 16, color: Colors.grey),
+            if (!entry.isFullTank)
+              const Padding(
+                padding: EdgeInsets.only(left: 4),
+                child: Icon(Icons.opacity, size: 16, color: Colors.orange),
+              ),
           ],
         ),
         subtitle: Column(
@@ -500,6 +508,46 @@ class _FuelEntryCard extends StatelessWidget {
           icon: const Icon(Icons.delete_outline, size: 20),
           onPressed: onDelete,
         ),
+        children: [
+          if (entry.notes != null || entry.pricePerLiter != null || !entry.isFullTank)
+            Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  if (entry.pricePerLiter != null)
+                    _DetailRow(label: 'Price per liter', value: '₹${entry.pricePerLiter!.toStringAsFixed(2)}'),
+                  _DetailRow(label: 'Tank filled', value: entry.isFullTank ? 'Full' : 'Partial'),
+                  if (entry.notes != null) ...[
+                    const SizedBox(height: 8),
+                    const Text('Notes:', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12)),
+                    Text(entry.notes!, style: const TextStyle(fontSize: 13)),
+                  ],
+                ],
+              ),
+            ),
+        ],
+      ),
+    );
+  }
+}
+
+class _DetailRow extends StatelessWidget {
+  final String label;
+  final String value;
+
+  const _DetailRow({required this.label, required this.value});
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 2.0),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Text(label, style: TextStyle(color: Colors.grey[600], fontSize: 12)),
+          Text(value, style: const TextStyle(fontWeight: FontWeight.w500, fontSize: 12)),
+        ],
       ),
     );
   }

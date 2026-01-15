@@ -22,9 +22,18 @@ class DatabaseService {
 
     return await openDatabase(
       path,
-      version: 1,
+      version: 2,
       onCreate: _createDB,
+      onUpgrade: _onUpgrade,
     );
+  }
+
+  Future<void> _onUpgrade(Database db, int oldVersion, int newVersion) async {
+    if (oldVersion < 2) {
+      await db.execute('ALTER TABLE fuel_entries ADD COLUMN odometer_image_path TEXT');
+      await db.execute('ALTER TABLE fuel_entries ADD COLUMN is_full_tank INTEGER DEFAULT 1');
+      await db.execute('ALTER TABLE fuel_entries ADD COLUMN notes TEXT');
+    }
   }
 
   Future<void> _createDB(Database db, int version) async {
@@ -56,6 +65,9 @@ class DatabaseService {
         fuel_liters $realTypeNullable,
         fuel_rupees $realTypeNullable,
         price_per_liter $realTypeNullable,
+        odometer_image_path $textTypeNullable,
+        is_full_tank INTEGER DEFAULT 1,
+        notes $textTypeNullable,
         created_at $textType,
         FOREIGN KEY (vehicle_id) REFERENCES vehicles (id) ON DELETE CASCADE
       )
@@ -257,4 +269,3 @@ class DatabaseService {
     db.close();
   }
 }
-

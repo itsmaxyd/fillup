@@ -1,3 +1,10 @@
+#Fillup v1.0.12 Release Notes
+
+**Release Date:** Janary 8, 2025
+
+This patch release cleans the code and make this f-droid complaint for release.
+
+---
 # Fillup v1.0.1 Release Notes
 
 **Release Date:** December 30, 2025
