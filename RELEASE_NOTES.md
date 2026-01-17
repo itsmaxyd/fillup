@@ -1,3 +1,16 @@
+# Fillup v1.1.0 Release Notes
+
+**Release Date:** January 17, 2026
+
+## What's New
+
+### New Improvements
+- Added Dark Mode!
+- Ability to submit Odometer Reading by taking photo.
+- Improved text readability in Dark Mode for Stat Cards.
+- Performance and UI Polishing.
+
+---
 #Fillup v1.0.12 Release Notes
 
 **Release Date:** Janary 8, 2025
