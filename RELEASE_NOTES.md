@@ -1,3 +1,16 @@
+# Fillup v1.1.1 Release Notes
+
+**Release Date:** January 21, 2026
+
+## What's New
+
+### 🔧 Improvements & Fixes
+- Added Data Import from CSV functionality in Settings.
+- Improved Fuel Price fetching architecture.
+- Resolved minor build and dependency issues.
+- Stability improvements and bug fixes.
+
+---
 # Fillup v1.1.0 Release Notes
 
 **Release Date:** January 17, 2026

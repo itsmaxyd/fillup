@@ -61,5 +61,4 @@ app.*.map.json
 # Plan file
 *.plan.md
 
-# API Configuration (contains sensitive keys)
 lib/config/api_config.dart

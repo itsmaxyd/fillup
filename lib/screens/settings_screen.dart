@@ -3,11 +3,13 @@ import 'package:provider/provider.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:csv/csv.dart';
+import 'package:file_picker/file_picker.dart';
 import 'dart:io';
 import '../providers/vehicle_provider.dart';
 import '../providers/fuel_entry_provider.dart';
 import '../providers/theme_provider.dart';
 import '../models/vehicle.dart';
+import '../models/fuel_entry.dart';
 import '../services/fuel_price_service.dart';
 import 'setup_screen.dart';
 
@@ -87,6 +89,106 @@ class SettingsScreen extends StatelessWidget {
       if (context.mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('Error exporting data: $e')),
+        );
+      }
+    }
+  }
+
+  Future<void> _importData(BuildContext context) async {
+    try {
+      final vehicleProvider = context.read<VehicleProvider>();
+      final entryProvider = context.read<FuelEntryProvider>();
+      
+      if (vehicleProvider.selectedVehicle == null) {
+        if (context.mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('No vehicle selected')),
+          );
+        }
+        return;
+      }
+
+      final result = await FilePicker.platform.pickFiles(
+        type: FileType.custom,
+        allowedExtensions: ['csv'],
+      );
+
+      if (result == null || result.files.isEmpty) return;
+
+      final file = File(result.files.first.path!);
+      final csvString = await file.readAsString();
+      
+      final List<List<dynamic>> csvData = const CsvToListConverter().convert(csvString);
+      
+      if (csvData.isEmpty || csvData.length < 2) {
+        if (context.mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Invalid or empty CSV file')),
+          );
+        }
+        return;
+      }
+
+      // Check header format
+      // Expected: ['Date', 'Odometer (km)', 'Fuel (L)', 'Amount (₹)', 'Price/L', 'Efficiency (km/l)']
+      final headers = csvData[0];
+      if (headers.length < 5) {
+        if (context.mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Invalid CSV format. Header mismatch.')),
+          );
+        }
+        return;
+      }
+
+      final List<FuelEntry> newEntries = [];
+      final selectedVehicleId = vehicleProvider.selectedVehicle!.id!;
+
+      for (var i = 1; i < csvData.length; i++) {
+        final row = csvData[i];
+        if (row.length < 5) continue;
+
+        try {
+          final date = DateTime.parse(row[0].toString());
+          final odometerReading = double.parse(row[1].toString());
+          final fuelLiters = row[2].toString().isNotEmpty ? double.parse(row[2].toString()) : null;
+          final fuelRupees = row[3].toString().isNotEmpty ? double.parse(row[3].toString()) : null;
+          final pricePerLiter = row[4].toString().isNotEmpty ? double.parse(row[4].toString()) : null;
+
+          newEntries.add(FuelEntry(
+            vehicleId: selectedVehicleId,
+            date: date,
+            odometerReading: odometerReading,
+            fuelLiters: fuelLiters,
+            fuelRupees: fuelRupees,
+            pricePerLiter: pricePerLiter,
+            createdAt: DateTime.now(),
+          ));
+        } catch (e) {
+          debugPrint('Error parsing row $i: $e');
+        }
+      }
+
+      if (newEntries.isEmpty) {
+        if (context.mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('No valid entries found to import')),
+          );
+        }
+        return;
+      }
+
+      await entryProvider.importEntries(newEntries);
+
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Successfully imported ${newEntries.length} entries')),
+        );
+      }
+    } catch (e) {
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Error importing data: $e')),
         );
       }
     }
@@ -361,6 +463,13 @@ class SettingsScreen extends StatelessWidget {
                 title: const Text('Export Data'),
                 subtitle: const Text('Export fuel entries to CSV'),
                 onTap: () => _exportData(context),
+              ),
+
+              ListTile(
+                leading: const Icon(Icons.upload_file),
+                title: const Text('Import Data'),
+                subtitle: const Text('Import fuel entries from CSV'),
+                onTap: () => _importData(context),
               ),
 
               const Divider(),

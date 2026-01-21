@@ -44,6 +44,22 @@ class FuelEntryProvider with ChangeNotifier {
     }
   }
 
+  // Bulk add fuel entries
+  Future<void> importEntries(List<FuelEntry> newEntries) async {
+    try {
+      for (final entry in newEntries) {
+        await _db.createFuelEntry(entry);
+      }
+      if (_currentVehicleId != null) {
+        _entries = await _db.getFuelEntriesByVehicle(_currentVehicleId!);
+        notifyListeners();
+      }
+    } catch (e) {
+      debugPrint('Error importing fuel entries: $e');
+      rethrow;
+    }
+  }
+
   // Update fuel entry
   Future<bool> updateEntry(FuelEntry entry) async {
     try {

@@ -1,48 +1,48 @@
 name: fillup
 description: A fuel tracking app for monitoring fuel spends and efficiency
-publish_to: 'none'
-version: 1.1.0+15
+publish_to: "none"
+version: 1.1.1+16
 
 environment:
-  sdk: '>=3.0.0 <4.0.0'
-  flutter: '3.35.0'
+  sdk: ">=3.0.0 <4.0.0"
+  flutter: "3.35.0"
 
 dependencies:
   flutter:
     sdk: flutter
-  
+
   # State Management
   provider: ^6.1.1
-  
+
   # Database
   sqflite: ^2.3.0
   path: ^1.8.3
-  
+
   # Networking
   http: ^1.1.0
-  
+
   # Web Scraping
   html: ^0.15.4
-  
+
   # Charts
   fl_chart: ^1.1.1
-  
+
   # UI Components
   cupertino_icons: ^1.0.6
   intl: ^0.20.2
-  
+
   # File Export
   path_provider: ^2.1.1
   csv: ^6.0.0
   share_plus: ^12.0.1
-  
+
   # Preferences
   shared_preferences: ^2.2.2
 
   # Camera and OCR
   image_picker: ^1.1.2
   google_mlkit_text_recognition: ^0.13.0
-
+  file_picker: ^10.3.8
 
 dev_dependencies:
   flutter_test:
@@ -57,6 +57,6 @@ flutter_icons:
   android: "launcher_icon"
   ios: false
   image_path: "media/icon_512.png"
-  
+
   # assets:
   #   - assets/images/
