@@ -1,3 +1,24 @@
+# Fillup v1.1.2 Release Notes
+
+**Release Date:** January 22, 2026
+
+## What's New
+
+### 🔧 Major Improvements & API Integration
+- **Centralized Fuel Price API**: Switched from direct web scraping to a dedicated backend API for improved reliability and performance
+- **Enhanced Data Source**: Fuel prices now fetched from our hosted API at https://maxdemon.site, providing more consistent and accurate data
+- **Better Error Handling**: Improved fallback mechanisms when API is temporarily unavailable
+- **Performance Optimizations**: Reduced app crashes and improved data fetching speed
+- **API Endpoint Documentation**: Added comprehensive deployment and maintenance guides
+
+### 💻 Technical Changes
+- Removed direct dependency on external websites for fuel price data
+- Enhanced local caching system with better API integration
+- Improved network request timeout handling
+- Updated to Flutter 3.35.0 and latest dependencies
+
+---
+
 # Fillup v1.1.1 Release Notes
 
 **Release Date:** January 21, 2026

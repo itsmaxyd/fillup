@@ -4,7 +4,6 @@ from database import init_db, get_db
 from routes.cities import router as cities_router
 from routes.fuel_prices import router as fuel_prices_router
 from app.scheduler.tasks import router as tasks_router
-from middleware.auth import APIKeyAuth
 import logging
 import os
 
@@ -16,7 +15,7 @@ logger = logging.getLogger(__name__)
 app = FastAPI(
     title="Fuel Price API",
     description="API for retrieving live and historical fuel prices for 25 major Indian cities",
-    version="1.0.0",
+    version="1.1.1",
     docs_url="/docs",
     redoc_url="/redoc"
 )
@@ -29,9 +28,6 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
-
-# Add API key authentication middleware
-app.add_middleware(APIKeyAuth)
 
 # Include routers
 app.include_router(cities_router)

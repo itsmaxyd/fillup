@@ -1,4 +1,4 @@
-import 'package:html/parser.dart' as html_parser;
+import 'dart:convert';
 import 'package:http/http.dart' as http;
 import '../models/fuel_price.dart';
 import 'database_service.dart';
@@ -8,77 +8,79 @@ class FuelPriceService {
   static final FuelPriceService instance = FuelPriceService._init();
   final DatabaseService _db = DatabaseService.instance;
 
+  // Production API endpoint
+  static const String _apiBaseUrl = 'https://maxdemon.site';
+
   FuelPriceService._init();
 
-  // Normalize city name to match website format
+  // Normalize city name for consistency
   String _normalizeCityName(String city) {
     return city.trim();
   }
 
-  // Fetch current fuel price from mypetrolprice.com
+  // Fetch current fuel price from API
   Future<FuelPrice?> fetchFuelPrice(String city, String fuelType) async {
     try {
-      // Validate inputs to prevent injection attacks
+      // Validate inputs
       if (!SecurityUtils.isValidCityName(city)) {
         throw Exception('Invalid city name');
       }
-      
+
       if (!SecurityUtils.isValidFuelType(fuelType)) {
         throw Exception('Invalid fuel type');
       }
 
+      final normalizedCity = _normalizeCityName(city);
+      final normalizedFuelType = fuelType.toLowerCase();
+
       // Check if we have a recent cached price (less than 24 hours old)
-      final cachedPrice = await _db.getFuelPrice(city, fuelType);
+      final cachedPrice = await _db.getFuelPrice(normalizedCity, fuelType);
       if (cachedPrice != null && !cachedPrice.isStale()) {
         return cachedPrice;
       }
 
-      // Fetch from website
-      final normalizedCity = _normalizeCityName(city);
-      final url = fuelType.toLowerCase() == 'petrol'
-          ? 'https://www.mypetrolprice.com/petrol-price-in-india.aspx'
-          : 'https://www.mypetrolprice.com/diesel-price-in-india.aspx';
+      try {
+        // Fetch from API
+        final url = Uri.parse('$_apiBaseUrl/live_fuel_price/?fuel_type=$normalizedFuelType&location_type=city');
+        final response = await http.get(url).timeout(const Duration(seconds: 30));
 
-      final response = await http.get(Uri.parse(url)).timeout(const Duration(seconds: 30));
+        if (response.statusCode == 200) {
+          final List<dynamic> data = json.decode(response.body);
 
-      if (response.statusCode != 200) {
-        throw Exception('Failed to fetch fuel prices: ${response.statusCode}');
-      }
+          // Find the city in the response
+          for (final item in data) {
+            final apiCity = item['city'] as String?;
+            final priceStr = item['price'] as String?;
+            final changeStr = item['change'] as String?;
 
-      // Parse HTML
-      final document = html_parser.parse(response.body);
-      
-      // Search for city price - the structure is city name followed by price
-      // Looking for patterns like: "Delhi ▼ ₹ 94.81"
-      final bodyText = document.body?.text ?? '';
-      
-      // Try to find the city and extract price
-      final cityPattern = RegExp(
-        '${RegExp.escape(normalizedCity)}[^₹]*₹\\s*([\\d.]+)',
-        caseSensitive: false,
-      );
-      
-      final match = cityPattern.firstMatch(bodyText);
-      
-      if (match != null && match.groupCount >= 1) {
-        final priceStr = match.group(1);
-        if (priceStr != null) {
-          final price = double.tryParse(priceStr);
-          if (price != null) {
-            final fuelPrice = FuelPrice(
-              city: city,
-              fuelType: fuelType,
-              price: price,
-            );
-            
-            // Cache the price
-            await _db.saveFuelPrice(fuelPrice);
-            return fuelPrice;
+            if (apiCity == normalizedCity && priceStr != null) {
+              final price = double.tryParse(priceStr);
+              if (price != null) {
+                final fuelPrice = FuelPrice(
+                  city: normalizedCity,
+                  fuelType: fuelType,
+                  price: price,
+                  change: changeStr != null ? double.tryParse(changeStr) ?? 0.0 : 0.0,
+                );
+
+                // Cache the price
+                await _db.saveFuelPrice(fuelPrice);
+                return fuelPrice;
+              }
+            }
           }
+        } else {
+          throw Exception('API returned status code: ${response.statusCode}');
         }
+      } catch (apiError) {
+        // API call failed, try to use cached data
+        if (cachedPrice != null) {
+          return cachedPrice;
+        }
+        throw Exception('API unavailable: $apiError');
       }
 
-      // If parsing failed, return cached price even if stale
+      // If we get here, no data found
       if (cachedPrice != null) {
         return cachedPrice;
       }
@@ -90,7 +92,7 @@ class FuelPriceService {
       if (cachedPrice != null) {
         return cachedPrice;
       }
-      
+
       throw Exception('Failed to fetch fuel price: $e');
     }
   }

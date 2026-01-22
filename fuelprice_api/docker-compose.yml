@@ -5,12 +5,12 @@ services:
     build: .
     container_name: fuelprice-api
     ports:
-      - "8000:8000"
+      - "8443:8443"
     volumes:
-      - ./data:/app/data
-      - .:/app
+      - ./data:/app/data:z
     environment:
-      - API_KEY=${API_KEY}
+      # No API key required - authentication removed
+      - DATABASE_URL=sqlite:///./data/fuel_prices.db
     restart: unless-stopped
     networks:
       - fuelprice-network
