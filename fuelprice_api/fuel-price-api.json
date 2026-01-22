@@ -1,0 +1,304 @@
+{
+  "info": {
+    "title": "Fuel Price API",
+    "version": "1.0.0",
+    "description": "API for retrieving live and historical fuel prices for various locations in India"
+  },
+  "paths": {
+    "/cities": {
+      "get": {
+        "summary": "Get list of cities",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "name": {
+                        "type": "string"
+                      },
+                      "value": {
+                        "type": "string"
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "description": "Successful response"
+          }
+        },
+        "description": "Retrieve a list of all available cities"
+      }
+    },
+    "/states": {
+      "get": {
+        "summary": "Get list of states",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "name": {
+                        "type": "string"
+                      },
+                      "value": {
+                        "type": "string"
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "description": "Successful response"
+          }
+        },
+        "description": "Retrieve a list of all available states"
+      }
+    },
+    "/live_fuel_price": {
+      "get": {
+        "summary": "Get live fuel prices",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "city": {
+                        "type": "string"
+                      },
+                      "price": {
+                        "type": "string"
+                      },
+                      "change": {
+                        "type": "string"
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "description": "Successful response"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "detail": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            },
+            "description": "No live data found"
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "detail": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            },
+            "description": "Internal server error"
+          }
+        },
+        "parameters": [
+          {
+            "in": "query",
+            "name": "fuel_type",
+            "schema": {
+              "enum": [
+                "diesel",
+                "petrol"
+              ],
+              "type": "string"
+            },
+            "required": true
+          },
+          {
+            "in": "query",
+            "name": "location_type",
+            "schema": {
+              "enum": [
+                "state",
+                "city"
+              ],
+              "type": "string"
+            },
+            "required": true
+          }
+        ],
+        "description": "Retrieve current fuel prices for all cities or states"
+      }
+    },
+    "/historical_fuel_price": {
+      "get": {
+        "summary": "Get historical fuel prices",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/FuelData"
+                  }
+                }
+              }
+            },
+            "description": "Successful response"
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "detail": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            },
+            "description": "Bad request - Invalid location"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "detail": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            },
+            "description": "No data found"
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "detail": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            },
+            "description": "Internal server error"
+          }
+        },
+        "parameters": [
+          {
+            "in": "query",
+            "name": "fuel_type",
+            "schema": {
+              "enum": [
+                "diesel",
+                "petrol"
+              ],
+              "type": "string",
+              "default": "petrol"
+            },
+            "required": false
+          },
+          {
+            "in": "query",
+            "name": "location_type",
+            "schema": {
+              "enum": [
+                "state",
+                "city"
+              ],
+              "type": "string",
+              "default": "state"
+            },
+            "required": false
+          },
+          {
+            "in": "query",
+            "name": "location",
+            "schema": {
+              "type": "string"
+            },
+            "required": true
+          },
+          {
+            "in": "query",
+            "name": "n",
+            "schema": {
+              "type": "integer",
+              "default": 2,
+              "minimum": 1
+            },
+            "required": false
+          }
+        ],
+        "description": "Retrieve historical fuel prices for a specific location"
+      }
+    }
+  },
+  "openapi": "3.0.0",
+  "security": [
+    {
+      "ApiKeyAuth": []
+    }
+  ],
+  "components": {
+    "schemas": {
+      "FuelData": {
+        "type": "object",
+        "properties": {
+          "date": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "price": {
+            "type": "number"
+          },
+          "change": {
+            "type": "number"
+          },
+          "location_type": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "securitySchemes": {
+      "ApiKeyAuth": {
+        "in": "header",
+        "name": "x-api-key",
+        "type": "apiKey"
+      }
+    }
+  }
+}

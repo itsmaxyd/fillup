@@ -6,7 +6,7 @@
 
 ### 🔧 Improvements & Fixes
 - Added Data Import from CSV functionality in Settings.
-- Improved Fuel Price fetching architecture.
+- Improved Fuel Price fetching architecture. - change to custom api own source
 - Resolved minor build and dependency issues.
 - Stability improvements and bug fixes.
 

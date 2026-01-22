@@ -62,3 +62,62 @@ app.*.map.json
 *.plan.md
 
 lib/config/api_config.dart
+/fuelprice_api/.env
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+venv/
+ENV/
+.venv
+
+# Database
+*.db
+*.sqlite
+*.sqlite3
+/data/
+
+# Docker
+.dockerignore
+
+# IDE
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Logs
+logs/
+*.log
+
+# Python cache
+.python-version
+
+# Jupyter notebooks
+.ipynb_checkpoints/
+
+# Virtual environment
+.env/
+.venv/
+env/
+venv/
+ENV/
+
+# Docker
+.dockerignore
+.docker/
+
+# VS Code
+.vscode/
+
+# PyCharm
+.idea/
+
+# Mac
+.DS_Store
+
+# Windows
+Thumbs.db

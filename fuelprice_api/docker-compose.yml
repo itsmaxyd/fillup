@@ -1,0 +1,20 @@
+version: '3.8'
+
+services:
+  fuelprice-api:
+    build: .
+    container_name: fuelprice-api
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./data:/app/data
+      - .:/app
+    environment:
+      - API_KEY=${API_KEY}
+    restart: unless-stopped
+    networks:
+      - fuelprice-network
+
+networks:
+  fuelprice-network:
+    driver: bridge
