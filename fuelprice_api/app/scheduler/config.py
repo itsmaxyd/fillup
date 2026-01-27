@@ -1,7 +1,7 @@
 import os
 from datetime import datetime, timedelta
 from apscheduler.schedulers.background import BackgroundScheduler
-from apscheduler.triggers.cron import CronTrigger
+from apscheduler.triggers.interval import IntervalTrigger
 from app.scheduler.services.fuel_scraper import FuelPriceScraper
 import logging
 
@@ -16,12 +16,11 @@ class SchedulerConfig:
         self.setup_scheduler()
 
     def setup_scheduler(self):
-        """Configure scheduler to run twice monthly at 3 AM IST"""
+        """Configure scheduler to run every 7 days at 3 AM IST"""
         # Convert to UTC (IST is UTC+5:30, so 3 AM IST = 9:30 PM UTC previous day)
-        trigger = CronTrigger(
-            day='2,16',  # 2nd and 16th of each month
-            hour='21',    # 9:30 PM UTC = 3 AM IST
-            minute='30',
+        trigger = IntervalTrigger(
+            days=7,  # Every 7 days
+            start_date=datetime.utcnow().replace(hour=21, minute=30, second=0, microsecond=0),  # 9:30 PM UTC
             timezone='UTC'
         )
 
@@ -34,7 +33,7 @@ class SchedulerConfig:
             replace_existing=True
         )
 
-        logger.info("Scheduler configured to run on 2nd and 16th at 3 AM IST")
+        logger.info("Scheduler configured to run every 7 days at 3 AM IST")
 
     def scrape_fuel_prices_job(self):
         """Job function to scrape fuel prices"""

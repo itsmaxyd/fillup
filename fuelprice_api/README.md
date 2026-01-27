@@ -1,11 +1,11 @@
 # Fuel Price API
 
-A complete fuel price API system that scrapes live fuel prices for 25 major Indian cities twice a month and provides a FastAPI server for accessing the data.
+A complete fuel price API system that scrapes live fuel prices for 709 Indian cities weekly and provides a FastAPI server for accessing the data.
 
 ## Features
 
-- **Automated Scraping**: Fetches petrol and diesel prices from Indian API twice monthly (2nd and 16th at 3 AM IST)
-- **25 Major Cities**: Covers Mumbai, Delhi, Bangalore, Hyderabad, Ahmedabad, Chennai, Kolkata, Surat, Pune, Jaipur, Lucknow, Kanpur, Nagpur, Indore, Thane, Bhopal, Visakhapatnam, Patna, Vadodara, Ghaziabad, Ludhiana, Agra, Nashik, Faridabad, Meerut
+- **Automated Scraping**: Fetches petrol and diesel prices from Indian API weekly (every 7 days at 3 AM IST)
+- **709 Indian Cities**: Comprehensive coverage of all cities returned by the Indian API across all states and union territories
 - **Historical Data**: Stores historical price data for trend analysis
 - **REST API**: FastAPI server with OpenAPI documentation
 - **Dockerized**: Ready for deployment with Docker and docker-compose
@@ -67,8 +67,8 @@ A complete fuel price API system that scrapes live fuel prices for 25 major Indi
 
 ### Authenticated Endpoints (Require `x-api-key` header)
 
-- `GET /cities` - Get list of cities
-- `GET /cities/states` - Get list of states
+- `GET /cities` - Get list of all 709 cities
+- `GET /cities/states` - Get list of all states and union territories
 - `GET /live_fuel_price` - Get live fuel prices
   - Parameters: `fuel_type` (diesel/petrol), `location_type` (state/city)
 - `GET /live_fuel_price/historical_fuel_price` - Get historical fuel prices
@@ -76,7 +76,7 @@ A complete fuel price API system that scrapes live fuel prices for 25 major Indi
 
 ## Scheduler
 
-The scheduler runs automatically on the 2nd and 16th of each month at 3 AM IST to scrape fuel prices from the Indian API and store them in the database.
+The scheduler runs automatically every 7 days at 3 AM IST to scrape fuel prices from the Indian API and store them in the database.
 
 ### Manual Trigger
 
@@ -87,9 +87,9 @@ curl -X POST http://localhost:8000/tasks/scrape-fuel-prices
 
 ## Database
 
-The system uses SQLite for simplicity. The database file is stored in `data/fuel_prices.db` and contains:
+The system uses SQLite for simplicity. The database file is stored in `fuel_prices.db` and contains:
 
-- `cities` table: List of 25 major Indian cities with their states
+- `cities` table: List of all 709 Indian cities with their states
 - `fuel_prices` table: Historical fuel price data with timestamps
 
 ## Deployment
@@ -124,7 +124,7 @@ The system uses SQLite for simplicity. The database file is stored in `data/fuel
 You can test the API using curl:
 
 ```bash
-# Get cities
+# Get cities (returns all 709 cities)
 curl http://localhost:8000/cities
 
 # Get live petrol prices for cities

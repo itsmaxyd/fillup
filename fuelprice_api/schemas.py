@@ -1,7 +1,6 @@
 from pydantic import BaseModel
 from typing import Optional, List
 from datetime import datetime
-from models import City, FuelPrice
 
 class CityBase(BaseModel):
     name: str
@@ -10,7 +9,7 @@ class CityBase(BaseModel):
 class CityCreate(CityBase):
     pass
 
-class City(CityBase):
+class CityResponse(CityBase):
     id: int
     is_metro: int
 
@@ -22,12 +21,12 @@ class FuelPriceBase(BaseModel):
     fuel_type: str
     price: float
     change: Optional[float] = 0.0
-    date: Optional[datetime] = None
+    date: Optional[datetime]
 
 class FuelPriceCreate(FuelPriceBase):
     pass
 
-class FuelPrice(FuelPriceBase):
+class FuelPriceResponse(FuelPriceBase):
     id: int
     source: str
 
