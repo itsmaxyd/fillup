@@ -3,6 +3,7 @@ class FuelPrice {
   final String city;
   final String fuelType;
   final double price;
+  final double change;
   final DateTime fetchedAt;
 
   FuelPrice({
@@ -10,6 +11,7 @@ class FuelPrice {
     required this.city,
     required this.fuelType,
     required this.price,
+    this.change = 0.0,
     DateTime? fetchedAt,
   }) : fetchedAt = fetchedAt ?? DateTime.now();
 
@@ -26,6 +28,7 @@ class FuelPrice {
       'city': city,
       'fuel_type': fuelType,
       'price': price,
+      'change': change,
       'fetched_at': fetchedAt.toIso8601String(),
     };
   }
@@ -36,6 +39,7 @@ class FuelPrice {
       city: map['city'] as String,
       fuelType: map['fuel_type'] as String,
       price: (map['price'] as num).toDouble(),
+      change: (map['change'] as num?)?.toDouble() ?? 0.0,
       fetchedAt: DateTime.parse(map['fetched_at'] as String),
     );
   }
@@ -45,6 +49,7 @@ class FuelPrice {
     String? city,
     String? fuelType,
     double? price,
+    double? change,
     DateTime? fetchedAt,
   }) {
     return FuelPrice(
@@ -52,6 +57,7 @@ class FuelPrice {
       city: city ?? this.city,
       fuelType: fuelType ?? this.fuelType,
       price: price ?? this.price,
+      change: change ?? this.change,
       fetchedAt: fetchedAt ?? this.fetchedAt,
     );
   }

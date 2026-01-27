@@ -1,3 +1,26 @@
+# Fillup v1.2.0 Release Notes
+
+**Release Date:** January 27, 2026
+
+## What's New
+
+### 🔍 Enhanced City Selection & Search
+- **Searchable City Dropdown**: Added autocomplete search functionality for city selection when adding or editing vehicles
+- **Expanded City Coverage**: Now supports all 708+ cities across India instead of just major cities
+- **Improved User Experience**: Type-ahead search makes finding cities much faster and easier
+
+### 🌐 API Integration Updates
+- **Updated API Endpoint**: Configured to use the dedicated fuel price API on port 4430 for improved reliability
+- **Comprehensive City Data**: App now fetches fuel prices for all available cities from the centralized API
+- **Better Data Accuracy**: Access to the complete dataset ensures more accurate and up-to-date fuel prices
+
+### 🔧 Technical Improvements
+- **Autocomplete Widgets**: Replaced static dropdowns with Flutter's Autocomplete for better search experience
+- **API Optimization**: Enhanced city fetching and caching mechanisms
+- **Version Update**: Bumped to v1.2.0 to reflect major feature additions
+
+---
+
 # Fillup v1.1.2 Release Notes
 
 **Release Date:** January 22, 2026
