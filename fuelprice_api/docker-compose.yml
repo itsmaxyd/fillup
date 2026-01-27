@@ -9,7 +9,7 @@ services:
     volumes:
       - ./data:/app/data:z
     environment:
-      - API_KEY=sk-live-SOunjzJlol0EZA0XNRZCfb7JVYitTWZp4M4fN41R
+      - API_KEY=<your-indianapi.in-api-key>
       - DATABASE_URL=sqlite:///./data/fuel_prices.db
     restart: unless-stopped
     networks:
