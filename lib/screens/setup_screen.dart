@@ -21,6 +21,30 @@ class _SetupScreenState extends State<SetupScreen> {
   String? _selectedFuelType = 'Petrol';
   String? _selectedCity = 'Delhi';
   bool _isLoading = false;
+  List<String> _allCities = [];
+
+  @override
+  void initState() {
+    super.initState();
+    _loadCities();
+  }
+
+  Future<void> _loadCities() async {
+    try {
+      final cities = await FuelPriceService.instance.getAllCities();
+      setState(() {
+        _allCities = cities;
+        if (!_allCities.contains(_selectedCity)) {
+          _selectedCity = _allCities.isNotEmpty ? _allCities[0] : 'Delhi';
+        }
+      });
+    } catch (e) {
+      // Fallback to major cities
+      setState(() {
+        _allCities = FuelPriceService.getMajorCities();
+      });
+    }
+  }
 
   @override
   void dispose() {
@@ -170,27 +194,64 @@ class _SetupScreenState extends State<SetupScreen> {
                 const SizedBox(height: 16),
                 
                 // City Dropdown
-                DropdownButtonFormField<String>(
-                  value: _selectedCity,
-                  decoration: const InputDecoration(
-                    labelText: 'City',
-                    prefixIcon: Icon(Icons.location_city),
-                    border: OutlineInputBorder(),
-                  ),
-                  items: cities.map((city) {
-                    return DropdownMenuItem(
-                      value: city,
-                      child: Text(city),
-                    );
-                  }).toList(),
-                  onChanged: (value) {
-                    setState(() => _selectedCity = value);
-                  },
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Please select a city';
+                Autocomplete<String>(
+                  initialValue: TextEditingValue(text: _selectedCity ?? ''),
+                  optionsBuilder: (TextEditingValue textEditingValue) {
+                    if (textEditingValue.text.isEmpty) {
+                      return _allCities;
                     }
-                    return null;
+                    return _allCities.where((city) =>
+                        city.toLowerCase().contains(textEditingValue.text.toLowerCase()));
+                  },
+                  onSelected: (String selection) {
+                    setState(() => _selectedCity = selection);
+                  },
+                  fieldViewBuilder: (BuildContext context, TextEditingController fieldTextEditingController, FocusNode fieldFocusNode, VoidCallback onFieldSubmitted) {
+                    return TextFormField(
+                      controller: fieldTextEditingController,
+                      focusNode: fieldFocusNode,
+                      decoration: const InputDecoration(
+                        labelText: 'City',
+                        hintText: 'Start typing to search cities',
+                        prefixIcon: Icon(Icons.location_city),
+                        border: OutlineInputBorder(),
+                      ),
+                      validator: (value) {
+                        if (value == null || value.trim().isEmpty) {
+                          return 'Please select a city';
+                        }
+                        if (!_allCities.contains(value.trim())) {
+                          return 'Please select a valid city';
+                        }
+                        return null;
+                      },
+                    );
+                  },
+                  optionsViewBuilder: (BuildContext context, AutocompleteOnSelected<String> onSelected, Iterable<String> options) {
+                    return Align(
+                      alignment: Alignment.topLeft,
+                      child: Material(
+                        elevation: 4.0,
+                        child: Container(
+                          constraints: const BoxConstraints(maxHeight: 200),
+                          width: MediaQuery.of(context).size.width - 48,
+                          child: ListView.builder(
+                            padding: EdgeInsets.zero,
+                            shrinkWrap: true,
+                            itemCount: options.length,
+                            itemBuilder: (BuildContext context, int index) {
+                              final String option = options.elementAt(index);
+                              return ListTile(
+                                title: Text(option),
+                                onTap: () {
+                                  onSelected(option);
+                                },
+                              );
+                            },
+                          ),
+                        ),
+                      ),
+                    );
                   },
                 ),
                 

@@ -198,14 +198,22 @@ class SettingsScreen extends StatelessWidget {
     final nameController = TextEditingController(text: vehicle.name);
     String selectedFuelType = vehicle.fuelType;
     String selectedCity = vehicle.city;
+    List<String> allCities = [];
+
+    // Load cities
+    FuelPriceService.instance.getAllCities().then((cities) {
+      allCities = cities;
+    }).catchError((_) {
+      allCities = FuelPriceService.getMajorCities();
+    });
 
     showDialog(
       context: context,
-      builder: (dialogContext) => AlertDialog(
-        title: const Text('Edit Vehicle'),
-        content: StatefulBuilder(
-          builder: (context, setState) {
-            return SingleChildScrollView(
+      builder: (dialogContext) => StatefulBuilder(
+        builder: (context, setState) {
+          return AlertDialog(
+            title: const Text('Edit Vehicle'),
+            content: SingleChildScrollView(
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
@@ -233,51 +241,87 @@ class SettingsScreen extends StatelessWidget {
                     },
                   ),
                   const SizedBox(height: 16),
-                  DropdownButtonFormField<String>(
-                    value: selectedCity,
-                    decoration: const InputDecoration(
-                      labelText: 'City',
-                      border: OutlineInputBorder(),
-                    ),
-                    items: FuelPriceService.getMajorCities().map((city) {
-                      return DropdownMenuItem(value: city, child: Text(city));
-                    }).toList(),
-                    onChanged: (value) {
-                      if (value != null) {
-                        setState(() => selectedCity = value);
+                  Autocomplete<String>(
+                    initialValue: TextEditingValue(text: selectedCity),
+                    optionsBuilder: (TextEditingValue textEditingValue) {
+                      final cities = allCities.isNotEmpty ? allCities : FuelPriceService.getMajorCities();
+                      if (textEditingValue.text.isEmpty) {
+                        return cities;
                       }
+                      return cities.where((city) =>
+                          city.toLowerCase().contains(textEditingValue.text.toLowerCase()));
+                    },
+                    onSelected: (String selection) {
+                      selectedCity = selection;
+                    },
+                    fieldViewBuilder: (BuildContext context, TextEditingController fieldTextEditingController, FocusNode fieldFocusNode, VoidCallback onFieldSubmitted) {
+                      return TextFormField(
+                        controller: fieldTextEditingController,
+                        focusNode: fieldFocusNode,
+                        decoration: const InputDecoration(
+                          labelText: 'City',
+                          hintText: 'Start typing to search cities',
+                          border: OutlineInputBorder(),
+                        ),
+                      );
+                    },
+                    optionsViewBuilder: (BuildContext context, AutocompleteOnSelected<String> onSelected, Iterable<String> options) {
+                      return Align(
+                        alignment: Alignment.topLeft,
+                        child: Material(
+                          elevation: 4.0,
+                          child: Container(
+                            constraints: const BoxConstraints(maxHeight: 200),
+                            width: MediaQuery.of(context).size.width - 100,
+                            child: ListView.builder(
+                              padding: EdgeInsets.zero,
+                              shrinkWrap: true,
+                              itemCount: options.length,
+                              itemBuilder: (BuildContext context, int index) {
+                                final String option = options.elementAt(index);
+                                return ListTile(
+                                  title: Text(option),
+                                  onTap: () {
+                                    onSelected(option);
+                                  },
+                                );
+                              },
+                            ),
+                          ),
+                        ),
+                      );
                     },
                   ),
                 ],
               ),
-            );
-          },
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(dialogContext),
-            child: const Text('Cancel'),
-          ),
-          TextButton(
-            onPressed: () async {
-              final updatedVehicle = vehicle.copyWith(
-                name: nameController.text,
-                fuelType: selectedFuelType,
-                city: selectedCity,
-              );
-              
-              await context.read<VehicleProvider>().updateVehicle(updatedVehicle);
-              
-              if (dialogContext.mounted) {
-                Navigator.pop(dialogContext);
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('Vehicle updated')),
-                );
-              }
-            },
-            child: const Text('Save'),
-          ),
-        ],
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(dialogContext),
+                child: const Text('Cancel'),
+              ),
+              TextButton(
+                onPressed: () async {
+                  final updatedVehicle = vehicle.copyWith(
+                    name: nameController.text,
+                    fuelType: selectedFuelType,
+                    city: selectedCity,
+                  );
+                  
+                  await context.read<VehicleProvider>().updateVehicle(updatedVehicle);
+                  
+                  if (dialogContext.mounted) {
+                    Navigator.pop(dialogContext);
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(content: Text('Vehicle updated')),
+                    );
+                  }
+                },
+                child: const Text('Save'),
+              ),
+            ],
+          );
+        },
       ),
     );
   }
@@ -489,7 +533,7 @@ class SettingsScreen extends StatelessWidget {
               const ListTile(
                 leading: Icon(Icons.info_outline),
                 title: Text('Version'),
-                subtitle: Text('1.1.0'),
+                subtitle: Text('1.2.0'),
               ),
 
               const ListTile(

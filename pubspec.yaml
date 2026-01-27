@@ -1,7 +1,7 @@
 name: fillup
 description: A fuel tracking app for monitoring fuel spends and efficiency
 publish_to: "none"
-version: 1.1.1+16
+version: 1.2.0+17
 
 environment:
   sdk: ">=3.0.0 <4.0.0"

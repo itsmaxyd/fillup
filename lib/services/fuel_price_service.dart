@@ -9,7 +9,7 @@ class FuelPriceService {
   final DatabaseService _db = DatabaseService.instance;
 
   // Production API endpoint
-  static const String _apiBaseUrl = 'https://maxdemon.site';
+  static const String _apiBaseUrl = 'https://maxdemon.site:4430';
 
   FuelPriceService._init();
 
@@ -101,6 +101,32 @@ class FuelPriceService {
   Future<double?> getPrice(String city, String fuelType) async {
     final fuelPrice = await fetchFuelPrice(city, fuelType);
     return fuelPrice?.price;
+  }
+
+  // Fetch all cities from API
+  Future<List<String>> fetchAllCities() async {
+    try {
+      final url = Uri.parse('$_apiBaseUrl/live_fuel_price/?fuel_type=petrol&location_type=city');
+      final response = await http.get(url).timeout(const Duration(seconds: 30));
+
+      if (response.statusCode == 200) {
+        final List<dynamic> data = json.decode(response.body);
+        final cities = data.map((item) => item['city'] as String).toList();
+        cities.sort(); // Sort alphabetically
+        return cities;
+      } else {
+        throw Exception('API returned status code: ${response.statusCode}');
+      }
+    } catch (e) {
+      // Fallback to hardcoded list if API fails
+      return getMajorCities();
+    }
+  }
+
+  // Get list of all cities (from API or cached)
+  Future<List<String>> getAllCities() async {
+    // For now, fetch from API each time. In production, you might want to cache this
+    return await fetchAllCities();
   }
 
   // Refresh all cached prices
