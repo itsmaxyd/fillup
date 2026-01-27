@@ -22,7 +22,7 @@ class DatabaseService {
 
     return await openDatabase(
       path,
-      version: 2,
+      version: 3,
       onCreate: _createDB,
       onUpgrade: _onUpgrade,
     );
@@ -33,6 +33,9 @@ class DatabaseService {
       await db.execute('ALTER TABLE fuel_entries ADD COLUMN odometer_image_path TEXT');
       await db.execute('ALTER TABLE fuel_entries ADD COLUMN is_full_tank INTEGER DEFAULT 1');
       await db.execute('ALTER TABLE fuel_entries ADD COLUMN notes TEXT');
+    }
+    if (oldVersion < 3) {
+      await db.execute('ALTER TABLE fuel_prices ADD COLUMN change REAL DEFAULT 0.0');
     }
   }
 
@@ -80,6 +83,7 @@ class DatabaseService {
         city $textType,
         fuel_type $textType,
         price $realType,
+        change $realTypeNullable,
         fetched_at $textType,
         UNIQUE(city, fuel_type)
       )
