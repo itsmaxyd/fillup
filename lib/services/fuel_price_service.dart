@@ -9,7 +9,7 @@ class FuelPriceService {
   final DatabaseService _db = DatabaseService.instance;
 
   // Production API endpoint
-  static const String _apiBaseUrl = 'https://maxdemon.site:4430';
+  static const String _apiBaseUrl = 'https://maxdemon.site/api';
 
   FuelPriceService._init();
 

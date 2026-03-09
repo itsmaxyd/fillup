@@ -1,3 +1,14 @@
+# Fillup v1.3.0 Release Notes
+
+**Release Date:** March 09, 2026
+
+## What's New
+
+### 🔗 API Updates
+- **API URL Change**: Updated the fuel price retrieval API endpoint.
+
+---
+
 # Fillup v1.2.0 Release Notes
 
 **Release Date:** January 27, 2026
